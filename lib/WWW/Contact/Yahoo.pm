@@ -1,0 +1,123 @@
+package WWW::Contact::Yahoo;
+
+use Moose;
+use WWW::Mechanize::GZip;
+
+extends 'WWW::Contact::Base';
+
+sub BUILD {
+    my ($self) = @_;
+    
+    $self->{ua} = WWW::Mechanize::GZip->new(
+        agent       => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)',
+        cookie_jar  => {},
+        stack_depth => 1,
+    );
+}
+
+sub get_contacts {
+    my ($self, $email, $password) = @_;
+
+    # reset
+    $self->errstr(undef);
+    my @contacts;
+    
+    my $ua = $self->ua;
+    $self->debug("start get_contacts from Yahoo!");
+    
+    # to form
+    $self->get('https://login.yahoo.com/config/login_verify2?&.src=ym') || return;
+    $self->submit_form(
+        form_name => 'login_form',
+        fields    => {
+            login  => $email,
+            passwd => $password,
+        },
+    ) || return;
+    my $content = $ua->content();
+    if ($content =~ /=[\'\"]yregertxt/) {
+        $self->errstr('Wrong Password');
+        return;
+    }
+    
+    $self->debug('Login OK');
+
+    $self->get('http://address.mail.yahoo.com/') || return;
+    $ua->follow_link( url_regex => qr/import_export/i );
+    
+    ##### detect the export form, the last form
+    my $form_number = 3;
+    while ( $form_number > 0 && !$self->{ua}->form_number($form_number) ) {
+        $form_number--;
+    }
+    #####
+
+    eval {
+        $self->submit_form(
+            form_number => $form_number,
+            button      => 'submit[action_export_yahoo]',
+        );
+    };
+    
+    $content = $ua->content();
+    my $i;
+    while ( $content
+        =~ /^\"(.*?)\"\,\".*?\"\,\"(.*?)\"\,\".*?\"\,\"(.*?)\"\,\".*?\"\,\".*?\"\,\"(.*?)\"/mg
+        ) {
+        $i++;
+        next if ( $i == 1 );    # skip the first line.
+        next unless ( $3 or $4 );
+        my $email = $3 || $4 . '@yahoo.com';
+        my $name = ( $1 or $2 ) ? "$1 $2" : $4;
+        $_ = {
+            name       => $name,
+            email      => $email,
+        };
+        push @contacts, $_;
+    }
+
+    return wantarray ? @contacts : \@contacts;
+}
+
+no Moose;
+
+1;
+__END__
+
+=head1 NAME
+
+WWW::Contact::Yahoo - Get contacts/addressbook from Yahoo! Mail
+
+=head1 SYNOPSIS
+
+    use WWW::Contact::Yahoo;
+    
+    my $wc       = WWW::Contact::Yahoo->new();
+    my @contacts = $wc->get_contacts('itsa@yahoo.com', 'password');
+    my $errstr   = $wc->errstr;
+    if ($errstr) {
+        die $errstr;
+    } else {
+        print Dumper(\@contacts);
+    }
+
+=head1 DESCRIPTION
+
+get addressbook from Yahoo! Mail. extends L<WWW::Contact::Base>
+
+=head1 SEE ALSO
+
+L<WWW::Contact>, L<WWW::Mechanize::GZip>
+
+=head1 AUTHOR
+
+Fayland Lam, C<< <fayland at gmail.com> >>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2008 Fayland Lam, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
