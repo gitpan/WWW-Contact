@@ -1,11 +1,10 @@
 package WWW::Contact;
 
-use vars qw/$VERSION $AUTHORITY/;
 use Moose;
 use Moose::Util::TypeConstraints;
 
-$VERSION   = '0.01';
-$AUTHORITY = 'cpan:FAYLAND';
+our $VERSION   = '0.02';
+our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
 has 'supplier' => ( is => 'rw', isa => 'Str' );
@@ -58,8 +57,12 @@ sub get_contacts {
     }
 }
 
+sub pre_supplier { inner() }
+
 sub get_supplier_by_email {
     my ($self, $email) = @_;
+    
+    $self->pre_supplier();
     
     if ($email =~ /[\@\.]yahoo\./) {
         $self->supplier('Yahoo');

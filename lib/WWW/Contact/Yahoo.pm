@@ -1,19 +1,12 @@
 package WWW::Contact::Yahoo;
 
 use Moose;
-use WWW::Mechanize::GZip;
-
 extends 'WWW::Contact::Base';
 
-sub BUILD {
-    my ($self) = @_;
-    
-    $self->{ua} = WWW::Mechanize::GZip->new(
-        agent       => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)',
-        cookie_jar  => {},
-        stack_depth => 1,
-    );
-}
+our $VERSION   = '0.02';
+our $AUTHORITY = 'cpan:FAYLAND';
+
+has '+ua_class' => ( default => 'WWW::Mechanize::GZip' );
 
 sub get_contacts {
     my ($self, $email, $password) = @_;
@@ -69,11 +62,10 @@ sub get_contacts {
         next unless ( $3 or $4 );
         my $email = $3 || $4 . '@yahoo.com';
         my $name = ( $1 or $2 ) ? "$1 $2" : $4;
-        $_ = {
+        push @contacts, {
             name       => $name,
             email      => $email,
-        };
-        push @contacts, $_;
+        };;
     }
 
     return wantarray ? @contacts : \@contacts;
