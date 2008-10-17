@@ -1,18 +1,33 @@
---- #YAML:1.0
-name:                WWW-Contact
-version:             0.02
-abstract:            ~
-license:             ~
-author:              ~
-generated_by:        ExtUtils::MakeMaker version 6.42
-distribution_type:   module
-requires:     
-    Crypt::SSLeay:                 0
-    HTML::TokeParser::Simple:      0
-    Moose:                         0
-    Test::More:                    0
-    WWW::Mechanize:                0
-    WWW::Mechanize::GZip:          0
+---
+name: WWW-Contact
+version: 0.03
+author:
+  - 'Fayland Lam <fayland@gmail.com>'
+abstract: Get contacts/addressbook from Web
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+build_requires:
+  Crypt::SSLeay: 0
+  HTML::TokeParser::Simple: 0
+  Moose: 0
+  Test::More: 0
+  WWW::Mechanize: 0
+  WWW::Mechanize::GZip: 0
+provides:
+  WWW::Contact:
+    file: lib/WWW/Contact.pm
+    version: 0.03
+  WWW::Contact::Base:
+    file: lib/WWW/Contact/Base.pm
+    version: 0.02
+  WWW::Contact::Gmail:
+    file: lib/WWW/Contact/Gmail.pm
+    version: 0.02
+  WWW::Contact::Yahoo:
+    file: lib/WWW/Contact/Yahoo.pm
+    version: 0.03
+generated_by: Module::Build version 0.3
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
-    version: 1.3
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
