@@ -3,7 +3,7 @@ package WWW::Contact;
 use Moose;
 use Moose::Util::TypeConstraints;
 
-our $VERSION   = '0.04';
+our $VERSION   = '0.05';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
@@ -125,7 +125,15 @@ Get Contacts/AddressBook from public websites.
 
 =item Gmail
 
+L<WWW::Contact::Gmail> By Fayland Lam
+
 =item Yahoo! Mail
+
+L<WWW::Contact::Yahoo> By Fayland Lam
+
+=item Rediffmail
+
+L<WWW::Contact::Rediffmail> By Sachin Sebastian
 
 =back
 
@@ -193,15 +201,31 @@ We can use it within WWW::Contact
 
 =head1 SEE ALSO
 
-L<WWW::Contact::Gmail>, L<WWW::Contact::Yahoo>, L<WWW::Mechanize>, L<Moose>
+L<WWW::Mechanize>, L<Moose>
+
+=head1 SUPPORTS
+
+=over 4
+
+=item Code trunk
+
+L<http://code.google.com/p/perl-www-contact/>
+
+=item Group
+
+L<http://groups.google.com/group/perl-www-contact>
+
+=back
 
 =head1 AUTHOR
 
 Fayland Lam, C<< <fayland at gmail.com> >>
 
+Sachin Sebastian, C<< <sachinjsk at cpan.org> >>
+
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2008 Fayland Lam, all rights reserved.
+Copyright 2008 *AUTHOR* all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
