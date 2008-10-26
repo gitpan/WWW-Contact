@@ -3,15 +3,34 @@ package WWW::Contact;
 use Moose;
 use Moose::Util::TypeConstraints;
 
-our $VERSION   = '0.05';
+our $VERSION   = '0.06';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
 has 'supplier_pattern' => (
-    is => 'rw',
+    is  => 'rw',
     isa => 'ArrayRef',
     auto_deref => 1,
     default => sub { [] }
+);
+has 'known_supplier' => (
+    is  => 'rw',
+    isa => 'HashRef',
+    auto_deref => 1,
+    default => sub {
+        {
+            'gmail.com'      => 'Gmail',
+            'ymail.com'      => 'Yahoo',
+            'rocketmail.com' => 'Yahoo',
+            'rediffmail.com' => 'Rediffmail',
+            
+            # cn
+            '163.com'        => 'CN::163',
+            'yeah.net'       => 'CN::163',
+            'netease.com'    => 'CN::163',
+            'popo.163.com'   => 'CN::163',
+        }
+    }
 );
 
 sub get_contacts {
@@ -62,14 +81,17 @@ sub get_contacts {
 sub get_supplier_by_email {
     my ($self, $email) = @_;
 
+    my %known_supplier = $self->known_supplier;
+
     my ($username, $domain) = split('@', $email);
-    # @yahoo.com @yahoo.XX @ymail.com @rocketmail.com
-    if ($email =~ /[\@\.]yahoo\./ or $domain eq 'ymail.com' or $domain eq 'rocketmail.com' ) {
+    
+    if ( exists $known_supplier{ $domain } ) {
+        return $known_supplier{ $domain };
+    }
+    
+    # @yahoo.com @yahoo.XX @XX.yahoo.XX
+    if ( $email =~ /[\@\.]yahoo\./ ) {
         return 'Yahoo';
-    } elsif ($email =~ /\@gmail\.com$/) {
-        return 'Gmail';
-    } elsif ( $domain eq 'rediffmail.com' ) {
-        return 'Rediffmail';
     }
     
     my @supplier_pattern = $self->supplier_pattern;
@@ -134,6 +156,10 @@ L<WWW::Contact::Yahoo> By Fayland Lam
 =item Rediffmail
 
 L<WWW::Contact::Rediffmail> By Sachin Sebastian
+
+=item mail.163.com
+
+L<WWW::Contact::CN::163> By Fayland Lam
 
 =back
 
