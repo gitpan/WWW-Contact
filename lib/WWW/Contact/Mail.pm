@@ -3,7 +3,7 @@ package WWW::Contact::Mail;
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.09';
+our $VERSION   = '0.12';
 our $AUTHORITY = 'cpan:SACHINJSK';
 
 has '+ua_class' => ( default => 'WWW::Mechanize::GZip' );
@@ -81,10 +81,10 @@ WWW::Contact::Mail - Get contacts from Mail.com
 
 =head1 SYNOPSIS
 
-    use WWW::Contact::Mail;
+    use WWW::Contact;
     
-    my $wc       = WWW::Contact::Mail->new();
-    my @contacts = $wc->get_contacts('email@mail.com', 'password');
+    my $wc       = WWW::Contact->new();
+    my @contacts = $wc->get_contacts('itsa@mail.com', 'password');
     my $errstr   = $wc->errstr;
     if ($errstr) {
         die $errstr;
@@ -96,19 +96,19 @@ WWW::Contact::Mail - Get contacts from Mail.com
 
 get contacts from Mail.com. extends L<WWW::Contact::Base>
 
-Mail.com provides email addresses under different domain names. We currently support the most popular ones.
-    mail.com
-    email.com
-    iname.com
-    cheerful.com
-    consultant.com
-    europe.com
-    mindless.com
-    earthling.net
-    myself.com
-    post.com
-    techie.com
-    usa.com
+Mail.com provides email addresses under different domain names. We currently support the most popular ones - 
+    mail.com,
+    email.com,
+    iname.com,
+    cheerful.com,
+    consultant.com,
+    europe.com,
+    mindless.com,
+    earthling.net,
+    myself.com,
+    post.com,
+    techie.com,
+    usa.com,
     writeme.com
 
 =head1 SEE ALSO
