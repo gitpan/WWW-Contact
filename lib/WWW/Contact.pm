@@ -4,7 +4,7 @@ use Class::MOP ();
 use Moose;
 use Moose::Util::TypeConstraints;
 
-our $VERSION   = '0.10';
+our $VERSION   = '0.11';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
@@ -47,10 +47,11 @@ has 'known_supplier' => (
             'writeme.com'    => 'Mail',
             
             # hotmail
+            'hotmail.com'    => 'Hotmail',
+            'live.com'    => 'Hotmail',
             'compaq.net'     => 'Hotmail',
             'hotmail.co.jp'  => 'Hotmail',
             'hotmail.co.uk'  => 'Hotmail',
-            'hotmail.com'    => 'Hotmail',
             'hotmail.de'     => 'Hotmail',
             'hotmail.fr'     => 'Hotmail',
             'hotmail.it'     => 'Hotmail',
