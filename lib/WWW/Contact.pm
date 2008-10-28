@@ -4,7 +4,7 @@ use Class::MOP ();
 use Moose;
 use Moose::Util::TypeConstraints;
 
-our $VERSION   = '0.12';
+our $VERSION   = '0.13';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
@@ -25,6 +25,7 @@ has 'known_supplier' => (
             'rocketmail.com' => 'Yahoo',
             'rediffmail.com' => 'Rediffmail',
             'aol.com'        => 'AOL',
+            'indiatimes.com' => 'Indiatimes',
             
             # cn
             '163.com'        => 'CN::163',

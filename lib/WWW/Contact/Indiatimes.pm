@@ -1,9 +1,9 @@
-package WWW::Contact::Rediffmail;
+package WWW::Contact::Indiatimes;
 
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.13';
+our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:SACHINJSK';
 
 has '+ua_class' => ( default => 'WWW::Mechanize::GZip' );
@@ -16,17 +16,18 @@ sub get_contacts {
     my @contacts;
     
     my $ua = $self->ua;
-    $self->debug("start get_contacts from Rediff");
+    $self->debug("start get_contacts from Indiatimes");
     
     # Get username from email.
     $email =~ /(.*)@.*/;
     my $username = $1;
     
     # get to login form
-    $self->get('http://www.rediff.com') || return;
+    $self->get('http://in.indiatimes.com/') || return;
 
     $self->submit_form(
-        form_name => 'loginform',
+        form_name   => 'loginfrm',
+        form_number => 3,
         fields    => {
             login  => $username,
             passwd => $password,
@@ -34,47 +35,34 @@ sub get_contacts {
     ) || return;
     
     my $content = $ua->content();
-    if ($content =~ /Your login failed/ig) {
+    if ($content =~ /Invalid User/ig) {
         $self->errstr('Wrong Username or Password');
         return;
     }
 
     $self->debug('Login OK');
     
-    $ua->follow_link( url_regex => qr/login=/i );
-    my $link = $ua->follow_link( url_regex => qr/folder=inbox/i );
-    $content = $ua->content;
-
-    # Go to new Rediffmail, if taken to old one.
-    if ($content =~ /new Rediffmail/ig) {
-        $link = $ua->follow_link(text_regex => qr/new Rediffmail/i );
-    }
-    
-    # get url and session id.
-    my $base_link = $link->base();
-    $base_link =~ /(.*)\?.*session_id=(.*?)&/;
-    my $base_url   = $1;
-    my $session_id = $2;
-
-    $self->get("$base_url?do=downaddrbook&login=$username&session_id=$session_id&service=thunderbird");
+    $self->get("/home/$username/Contacts.csv");
 
     my $address_content = $ua->content();
-    @contacts = get_contacts_from_thunderbird_csv($address_content);
+    @contacts = get_contacts_from_csv($address_content);
     
     return wantarray ? @contacts : \@contacts;
 }
 
-sub get_contacts_from_thunderbird_csv {
+sub get_contacts_from_csv {
     my ($csv) = shift;
     my @contacts;
  
     # first_name, last_name, full_name, nickname, e-mail.
     my @lines = split(/\n/, $csv);
+    shift @lines; # skip the first line
     foreach my $line (@lines) {
+        $line =~ s/"//g;
         my @cols = split(',', $line);
         push @contacts, {
-            name  => $cols[2],
-            email => $cols[4]
+            name  => $cols[2].' '.$cols[3],
+            email => $cols[0]
         };
     }
     
@@ -89,14 +77,14 @@ __END__
 
 =head1 NAME
 
-WWW::Contact::Rediffmail - Get contacts from Rediffmail
+WWW::Contact::Indiatimes - Get contacts from Indiatimes
 
 =head1 SYNOPSIS
 
     use WWW::Contact;
     
     my $wc       = WWW::Contact->new();
-    my @contacts = $wc->get_contacts('itsa@rediffmail.com', 'password');
+    my @contacts = $wc->get_contacts('itsa@indiatimes.com', 'password');
     my $errstr   = $wc->errstr;
     if ($errstr) {
         die $errstr;
@@ -106,7 +94,7 @@ WWW::Contact::Rediffmail - Get contacts from Rediffmail
 
 =head1 DESCRIPTION
 
-get contacts from Rediff Mail. extends L<WWW::Contact::Base>
+get contacts from Indiatimes. extends L<WWW::Contact::Base>
 
 =head1 SEE ALSO
 
