@@ -3,10 +3,8 @@ package WWW::Contact::Indiatimes;
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.14';
+our $VERSION   = '0.15';
 our $AUTHORITY = 'cpan:SACHINJSK';
-
-has '+ua_class' => ( default => 'WWW::Mechanize::GZip' );
 
 sub get_contacts {
     my ($self, $email, $password) = @_;
@@ -54,7 +52,7 @@ sub get_contacts_from_csv {
     my ($csv) = shift;
     my @contacts;
  
-    # first_name, last_name, full_name, nickname, e-mail.
+    # e-mail, file_as, first_name, last_name
     my @lines = split(/\n/, $csv);
     shift @lines; # skip the first line
     foreach my $line (@lines) {

@@ -6,7 +6,7 @@ extends 'WWW::Contact::Base';
 use HTTP::Request::Common qw/POST/;
 use HTML::TokeParser::Simple;
 
-our $VERSION   = '0.14';
+our $VERSION   = '0.15';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 sub get_contacts {
@@ -61,7 +61,7 @@ sub get_contacts {
 	# var srf_sErr=\'The e-mail address or password is incorrect. Please try again.\';
 	my ( $has_error ) = ( $ua->content =~ /srf_sErr\=\'([^\']+)\'/ );
 	if ( $has_error ) {
-	    $self->errstr('Wrong Password');
+	    $self->errstr('Wrong Username or Password');
 	    return;
 	}
 

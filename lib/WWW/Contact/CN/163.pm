@@ -3,7 +3,7 @@ package WWW::Contact::CN::163;
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.14';
+our $VERSION   = '0.15';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 sub get_contacts {
@@ -27,7 +27,7 @@ sub get_contacts {
     ) || return;
     my $content = $ua->content();
     if ($content =~ /=[\'\"]eHint/) {
-        $self->errstr('Wrong Password');
+        $self->errstr('Wrong Username or Password');
         return;
     }
     

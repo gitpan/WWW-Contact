@@ -3,10 +3,8 @@ package WWW::Contact::Lycos;
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.01';
+our $VERSION   = '0.15';
 our $AUTHORITY = 'cpan:SACHINJSK';
-
-has '+ua_class' => ( default => 'WWW::Mechanize::GZip' );
 
 sub get_contacts {
     my ($self, $email, $password) = @_;
@@ -53,7 +51,7 @@ sub get_contacts_from_csv {
     my ($csv) = shift;
     my @contacts;
  
-    # first_name, last_name, full_name, nickname, e-mail.
+    # first_name, middle_name, last_name, nickname, e-mail.
     my @lines = split(/\n/, $csv);
     shift @lines; # skip the first line
     foreach my $line (@lines) {

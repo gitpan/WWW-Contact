@@ -3,10 +3,8 @@ package WWW::Contact::Rediffmail;
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.14';
+our $VERSION   = '0.15';
 our $AUTHORITY = 'cpan:SACHINJSK';
-
-has '+ua_class' => ( default => 'WWW::Mechanize::GZip' );
 
 sub get_contacts {
     my ($self, $email, $password) = @_;

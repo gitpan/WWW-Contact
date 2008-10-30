@@ -3,7 +3,7 @@ package WWW::Contact::Yahoo;
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.14';
+our $VERSION   = '0.15';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has '+ua_class' => ( default => 'WWW::Mechanize::GZip' );
@@ -29,7 +29,7 @@ sub get_contacts {
     ) || return;
     my $content = $ua->content();
     if ($content =~ /=[\'\"]yregertxt/) {
-        $self->errstr('Wrong Password');
+        $self->errstr('Wrong Username or Password');
         return;
     }
     

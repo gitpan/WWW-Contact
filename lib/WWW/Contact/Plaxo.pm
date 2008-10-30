@@ -1,9 +1,9 @@
-package WWW::Contact::Mail;
+package WWW::Contact::Plaxo;
 
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.15';
+our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:SACHINJSK';
 
 sub get_contacts {
@@ -14,32 +14,35 @@ sub get_contacts {
     my @contacts;
     
     my $ua = $self->ua;
-    $self->debug("start get_contacts from Mail.com");
+    $self->debug("start get_contacts from Plaxo");
     
     # get to login form
-    $self->get('http://www.mail.com') || return;
+    $self->get('https://www.plaxo.com/signin') || return;
 
     $self->submit_form(
-        form_name => 'mailcom',
+        form_name   => 'form',
         fields    => {
-            login    => $email,
-            password => $password,
+            'signin.email'    => $email,
+            'signin.password' => $password,
         },
     ) || return;
     
     my $content = $ua->content();
-
-     if ($content =~ /Invalid username\/password/ig) {
+    if ($content =~ /too many login failures/ig) {
+        $self->errstr('Account has had too many login failures recently and has been temporarily locked');
+        return;
+    }
+    elsif ($content =~ /Sign in to Plaxo/ig) {
         $self->errstr('Wrong Username or Password');
         return;
     }
-    $self->debug('Login OK');
 
-    $self->get("/scripts/addr/addressbook.cgi?showaddressbook=1") || return;
-    $ua->follow_link( text_regex => qr/Import\/Export/i );
+    $self->debug('Login OK');
+    
+    $self->get("http://www.plaxo.com/export/plaxo_ab_outlook.csv");
 
     $self->submit_form(
-        form_name => 'exportform'
+        form_name => 'form'
     ) || return;
 
     my $address_content = $ua->content();
@@ -52,15 +55,15 @@ sub get_contacts_from_csv {
     my ($csv) = shift;
     my @contacts;
  
-    # first_name, middle_name, last_name, nickname, e-mail.
+    # title, first_name, middle_name, last_name, suffix, e-mail.
     my @lines = split(/\n/, $csv);
     shift @lines; # skip the first line
     foreach my $line (@lines) {
         $line =~ s/"//g;
         my @cols = split(',', $line);
         push @contacts, {
-            name  => $cols[0].' '.$cols[2],
-            email => $cols[4]
+            name  => $cols[1].' '.$cols[3],
+            email => $cols[5]
         };
     }
     
@@ -75,14 +78,16 @@ __END__
 
 =head1 NAME
 
-WWW::Contact::Mail - Get contacts from Mail.com
+WWW::Contact::Plaxo - Get contacts from Plaxo
 
 =head1 SYNOPSIS
 
     use WWW::Contact;
     
     my $wc       = WWW::Contact->new();
-    my @contacts = $wc->get_contacts('itsa@mail.com', 'password');
+    # Note that the last argument for get_contacts is mandatory,
+    # or else it will try to fetch contacts from email.com
+    my @contacts = $wc->get_contacts('itsa@email.com', 'password', 'plaxo');
     my $errstr   = $wc->errstr;
     if ($errstr) {
         die $errstr;
@@ -92,22 +97,7 @@ WWW::Contact::Mail - Get contacts from Mail.com
 
 =head1 DESCRIPTION
 
-get contacts from Mail.com. extends L<WWW::Contact::Base>
-
-Mail.com provides email addresses under different domain names. We currently support the most popular ones - 
-    mail.com,
-    email.com,
-    iname.com,
-    cheerful.com,
-    consultant.com,
-    europe.com,
-    mindless.com,
-    earthling.net,
-    myself.com,
-    post.com,
-    techie.com,
-    usa.com,
-    writeme.com
+get contacts from plaxo. extends L<WWW::Contact::Base>
 
 =head1 SEE ALSO
 
