@@ -3,7 +3,7 @@ package WWW::Contact::Gmail;
 use Moose;
 extends 'WWW::Contact::Base';
 
-our $VERSION   = '0.15';
+our $VERSION   = '0.16';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 use HTML::TokeParser::Simple;
@@ -72,10 +72,12 @@ sub get_contacts_from_html {
             }   
         }
         if ($start) {
-            my $text = $token->as_is;
-            if ($text =~ /(\S+\@\S+)/) {
-                push @emails, $1;
-            }
+			if( $token->is_start_tag('td') ) {
+				my $text = $p->peek(2);
+				if ($text =~ /(\S+\@\S+)/) {
+					push @emails, $1;
+				}
+			}
         }
     }
     
