@@ -3,7 +3,7 @@ package WWW::Contact;
 use Class::MOP ();
 use Moose;
 
-our $VERSION   = '0.22';
+our $VERSION   = '0.23';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
@@ -113,7 +113,7 @@ sub get_contacts {
     
     my $module = 'WWW::Contact::' . $supplier;
     Class::MOP::load_class($module);
-    my $wc = new $module;
+    my $wc = $module->new();
     
     # reset
     $self->errstr(undef);
@@ -262,6 +262,10 @@ L<WWW::Contact::Lycos> By Sachin Sebastian
 
 L<WWW::Contact::Plaxo> By Sachin Sebastian
 
+=item GoogleContactsAPI
+
+L<WWW::Contact::GoogleContactsAPI> By Fayland Lam, using Google Contacts Data API
+
 =back
 
 =head1 METHODS
@@ -324,7 +328,7 @@ Assuming we write a custom module as WWW::Contact::Unknown
 
 We can use it within WWW::Contact
 
-    my $wc = new WWW::Contact;
+    my $wc = WWW::Contact->new();
     $wc->register_supplier( qr/\@a\.com$/, 'Unknown' );
     # or
     # $wc->register_supplier( 'a.com', 'Unknown' );
