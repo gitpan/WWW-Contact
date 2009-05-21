@@ -3,7 +3,7 @@ package WWW::Contact;
 use Class::MOP ();
 use Moose;
 
-our $VERSION   = '0.24';
+our $VERSION   = '0.25';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
@@ -196,6 +196,7 @@ WWW::Contact - Get contacts/addressbook from Web
 =head1 SYNOPSIS
 
     use WWW::Contact;
+    use Data::Dumper;
     
     # Get contacts from email providers.
     my $wc       = WWW::Contact->new();
@@ -291,7 +292,7 @@ To use custom supplier, we must register within WWW::Contact
     $wc->register_supplier( qr/\@a\.com$/, 'Unknown' );
     $wc->register_supplier( 'a.com', 'Unknown' );
 
-The first arg is a Regexp or domain from email postfix. The second arg is the according module postfix like 'Unknown' form WWW::Contact::Unknown
+The first arg is a Regexp or domain from email postfix. The second arg is the according module postfix like 'Unknown' from WWW::Contact::Unknown
 
 =head2 get_supplier_by_email
 
@@ -360,7 +361,7 @@ L<WWW::Mechanize>, L<Moose>
 
 =item Code trunk
 
-L<http://code.google.com/p/perl-www-contact/>
+L<http://github.com/fayland/perl-www-contact/tree/master>
 
 =item Group
 
@@ -373,6 +374,8 @@ L<http://groups.google.com/group/perl-www-contact>
 Fayland Lam, C<< <fayland at gmail.com> >>
 
 Sachin Sebastian, C<< <sachinjsk at cpan.org> >>
+
+Dimitar Petrov, C<< <mitakaa at gmail.com> >>
 
 =head1 COPYRIGHT & LICENSE
 
