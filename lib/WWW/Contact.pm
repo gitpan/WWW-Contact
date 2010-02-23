@@ -3,7 +3,7 @@ package WWW::Contact;
 use Class::MOP ();
 use Moose;
 
-our $VERSION   = '0.36';
+our $VERSION   = '0.37';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
@@ -60,6 +60,7 @@ has 'known_supplier' => (
             'msn.com'           => 'Hotmail',
             'passport.com'      => 'Hotmail',
             'webtv.net'         => 'Hotmail',
+            'live.co.uk'        => 'Hotmail',
 
             # bg
             'abv.bg'            => 'BG::Abv',
