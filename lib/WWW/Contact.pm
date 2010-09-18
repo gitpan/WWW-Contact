@@ -3,7 +3,7 @@ package WWW::Contact;
 use Class::MOP ();
 use Moose;
 
-our $VERSION   = '0.41';
+our $VERSION   = '0.43';
 our $AUTHORITY = 'cpan:FAYLAND';
 
 has 'errstr'   => ( is => 'rw', isa => 'Maybe[Str]' );
@@ -85,6 +85,28 @@ has 'social_network' => (
     }
 );
 
+has 'supplier_args' => (
+    is  => 'rw',
+    isa => 'HashRef',
+    default => sub { {} }
+);
+
+has 'resolve' => (
+    is  => 'rw',
+    isa => 'HashRef',
+    default => sub { {} }
+);
+
+has 'resolve_domain' => (
+    is      => 'ro',
+    isa     => 'Net::DNS::Resolver',
+    lazy    => 1,
+    default => sub {
+        require Net::DNS::Resolver;
+        Net::DNS::Resolver->new;
+    },
+);
+
 sub get_contacts {
     my $self = shift;
     my ( $email, $password, $social_network ) = @_;
@@ -98,9 +120,7 @@ sub get_contacts {
         $self->errstr('You must supply full email address.');
         return;
     }
-    
-    my ( $username, $postfix ) = ( lc($1), lc($2) );
-    
+
     # get supplier module
     my $supplier;
     if($social_network) {
@@ -120,7 +140,7 @@ sub get_contacts {
     
     my $module = 'WWW::Contact::' . $supplier;
     Class::MOP::load_class($module);
-    my $wc = $module->new();
+    my $wc = $module->new( $self->supplier_args );
     
     # reset
     $self->errstr(undef);
@@ -159,6 +179,18 @@ sub get_supplier_by_email {
             return $supplier->{supplier};
         } elsif ( $domain eq $pattern ) {
             return $supplier->{supplier};
+        }
+    }
+    
+    # resolve domain
+    my $r = $self->resolve;
+    return $r->{ $domain } if exists $r->{ $domain };
+    
+    # warn 'resolve domain';
+    foreach my $mx ($self->resolve_domain->query($domain, 'MX')) {
+        for ($mx->answer) {
+            # google corporate mail
+            return $r->{ $domain } = $known_supplier{'gmail.com'} if $_->exchange =~ /google(?:mail)?\.com$/i;
         }
     }
     
